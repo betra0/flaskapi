@@ -28,7 +28,7 @@ app = Flask(__name__)
 """ @app.route('/ruta', methods=['POST']) """
 @app.route('/')
 def raiz():
-    return "Inicio"
+    return "hola"
 
 @app.route('/user', methods=['POST','GET'])
 def user():
@@ -38,7 +38,7 @@ def user():
         edad = request.args.get('edad', default=None, type=int)
         print(name, edad)
         connection = mysql.connector.connect(**configdb)
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
         where = ""
         count = 0
         parametros = []
@@ -61,8 +61,9 @@ def user():
             sql = f"SELECT * FROM usuarios {where}"
             cursor.execute(sql, parametros)
             resultados = cursor.fetchall()
+            
             print(resultados)
-            return jsonify({'success': True, 'message':'Consulta con exito'}), 200
+            return jsonify({'success': True, 'message':'Consulta con exito', 'data':resultados}), 200
 
         except Exception as e:
             print(str(e))
@@ -85,6 +86,7 @@ def user():
 
         connection = mysql.connector.connect(**configdb)
         cursor = connection.cursor()
+        
         try:
             # Consulta SQL para insertar un nuevo usuario
             sql = "INSERT INTO usuarios (nombre, mail, edad) VALUES (%s, %s, %s)"
